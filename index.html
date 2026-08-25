@@ -1,492 +1,548 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<title>Противоположности — Мемори</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Кто ты в этом цирке?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
 
-<!-- ШРИФТ NUNITO -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #AAEE44;
+            --text-main: #ffffff;
+            --text-sec: #aaaaaa;
+        }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
-body{
-  font-family:'Nunito',"Segoe UI",system-ui,sans-serif;
-  background-color:#0D1B2A;
-  background-image:
-    radial-gradient(90% 60% at 50% -10%, rgba(170,238,68,.10), transparent 70%),
-    linear-gradient(180deg,#0D1B2A 0%, #0b1622 60%, #081019 100%);
-  color:#fff;user-select:none;
-}
-button{font-family:inherit;cursor:pointer;border:none;touch-action:manipulation}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;gap:10px;padding:12px;overflow:hidden}
-.screen.active{display:flex}
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
-/* ===== ЖИВОЕ ЗВЁЗДНОЕ НЕБО ===== */
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.55);opacity:.2;animation:twinkle ease-in-out infinite}
-.star.big{width:5px;height:5px}
-.star.gold{background:#ffe1a1;box-shadow:0 0 8px 2px rgba(255,215,140,.6)}
-.star.blue{background:#aecdff;box-shadow:0 0 8px 2px rgba(140,180,255,.6)}
-.star.lit{animation:none;opacity:1;transform:scale(2);box-shadow:0 0 14px 5px rgba(255,255,255,.95)}
-@keyframes twinkle{0%,100%{opacity:.12;transform:scale(.6)}50%{opacity:1;transform:scale(1.3)}}
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.sparkFlash{position:fixed;z-index:200;pointer-events:none;transform:translate(-50%,-50%);color:#fff2c4;font-size:26px;text-shadow:0 0 12px #ffd76e,0 0 26px rgba(255,215,110,.8);animation:flashStar .9s ease-out forwards}
-@keyframes flashStar{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(40deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7) rotate(120deg)}}
-.sparkDot{position:fixed;z-index:200;pointer-events:none;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,215,120,.9);transform:translate(-50%,-50%);animation:flyDot .85s ease-out forwards}
-@keyframes flyDot{0%{opacity:1;margin-left:0;margin-top:0}100%{opacity:0;margin-left:var(--dx);margin-top:var(--dy)}}
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
 
-.title{font-size:clamp(20px,5vmin,40px);text-align:center;font-weight:900;letter-spacing:1px;text-shadow:0 3px 12px rgba(0,0,0,.45)}
-.subtitle{text-align:center;opacity:.85;font-size:clamp(11px,2.5vmin,16px);font-weight:700}
-.btn{border-radius:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ff9f43,#ff6b6b);box-shadow:0 6px 18px rgba(255,107,107,.35);transition:transform .15s;letter-spacing:.5px}
-.btn:active{transform:scale(.95)}
-.btn.big{padding:12px 28px;font-size:clamp(14px,3vmin,20px)}
-.btn.small{padding:8px 10px;font-size:clamp(10px,2vmin,13px);background:rgba(255,255,255,.12);box-shadow:none;border:1px solid rgba(255,255,255,.25)}
+        header {
+            text-align: center;
+            padding: 15px 20px 10px;
+            flex-shrink: 0;
+        }
 
-/* ===== НЕОНОВАЯ КНОПКА «СТАРТ» ===== */
-.btn.neon{
-  position:relative;overflow:hidden;
-  border-radius:999px;
-  background:linear-gradient(160deg,#c8ff70 0%,#AAEE44 45%,#79cf22 100%);
-  color:#0D1B2A;
-  padding:11px 38px;
-  font-size:clamp(12px,2.4vmin,17px);
-  font-weight:800;
-  animation:neonPulse 1.8s ease-in-out infinite;
-}
-.btn.neon .lbl{letter-spacing:3px;margin-right:-3px}
-.btn.neon .play{display:inline-block;width:.5em;height:.66em;margin-right:.5em;background:#0D1B2A;clip-path:polygon(0 0,100% 50%,0 100%)}
-.btn.neon::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%)}
-.btn.neon::before{content:"";position:absolute;top:-20%;left:-70%;width:45%;height:140%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-20deg);animation:shine 2.6s ease-in-out infinite;z-index:1}
-@keyframes shine{0%,55%{left:-70%}95%,100%{left:135%}}
-.btn.neon:active{animation:none;transform:scale(.94);box-shadow:0 0 14px rgba(170,238,68,.8)}
-@keyframes neonPulse{
-  0%,100%{box-shadow:0 0 8px rgba(170,238,68,.55),0 0 24px rgba(170,238,68,.3);transform:scale(1)}
-  50%{box-shadow:0 0 18px rgba(170,238,68,.95),0 0 48px rgba(170,238,68,.55),0 0 80px rgba(170,238,68,.28);transform:scale(1.04)}
-}
+        h1 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
 
-.lvlRow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-#mainImg{flex:1;min-height:0;border-radius:16px;overflow:hidden}
-#mainImg img{width:100%;height:100%;object-fit:cover;display:block}
+        p.subtitle {
+            color: var(--text-sec);
+            font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+        }
 
-.hud{display:flex;align-items:center;gap:8px}
-#lvlBadge{flex:1;text-align:center;font-weight:800;font-size:clamp(11px,2.6vmin,17px);line-height:1.15}
-#lvlBadge small{opacity:.65;font-weight:400;font-size:.72em}
-#pairsHud{font-size:clamp(10px,2.2vmin,14px);background:rgba(255,255,255,.12);padding:6px 10px;border-radius:99px;white-space:nowrap;font-weight:800}
-.iconBtn{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-size:18px}
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: clamp(8px, 1.5vw, 15px);
+            padding: 10px clamp(15px, 3vw, 40px);
+            flex-grow: 1;
+            max-height: calc(100vh - 80px);
+        }
 
-.boardWrap{flex:1;min-height:0;position:relative;max-width:1100px;width:100%;margin:0 auto}
-#grid{position:absolute;inset:0;display:grid;gap:8px;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
-@media (orientation:portrait){#grid{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr)}}
+        .card {
+            background: var(--card-bg);
+            border-radius: clamp(8px, 1vw, 16px);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
 
-.card{perspective:900px;cursor:pointer;min-height:0;touch-action:manipulation;border-radius:12px}
-.inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,.2,.2,1)}
-.card.up .inner,.card.matched .inner{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,.35)}
-.cover{background:linear-gradient(135deg,#6a5be0,#a44bdc)}
-.cover img{width:100%;height:100%;object-fit:cover;display:block}
-.front{transform:rotateY(180deg);background:#fff;color:#333}
-.imgbox{flex:1;min-height:0;overflow:hidden}
-.imgbox img{width:100%;height:100%;object-fit:cover;display:block}
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(170, 238, 68, 0.3);
+            border-color: var(--accent);
+            z-index: 10;
+        }
 
-.ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:repeating-linear-gradient(45deg,#f0eeff,#f0eeff 12px,#e4e0fb 12px,#e4e0fb 24px);border:2px dashed #b9aef5;color:#7c6cf0;text-align:center;padding:4px}
-.ph .em{font-size:clamp(18px,6vmin,46px);line-height:1}
-.ph small{font-size:clamp(7px,1.7vmin,11px);opacity:.85;font-weight:700}
-.cover-ph{background:linear-gradient(135deg,#6a5be0,#a44bdc);border-color:rgba(255,255,255,.6);color:#fff}
-.main-ph{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.35);color:#d8d2ff}
-.final-ph{background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.35);color:#ffe2b8}
+        .img-box {
+            flex-grow: 1;
+            background: #f7f6e7;
+            overflow: hidden;
+            position: relative;
+        }
 
-/* ===== ПОДСВЕТКА ВЫБОРА (цвет пары — --pc) ===== */
-.card.sel{box-shadow:0 0 0 4px var(--pc),0 0 22px 5px var(--pc);z-index:2}
-.card.sel .front{box-shadow:inset 0 0 0 3px var(--pc)}
-#grid.mem .card.up:not(.matched){box-shadow:0 0 0 3px var(--pc),0 0 16px 3px var(--pc)}
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
 
-/* ===== СОВПАДЕНИЕ: «стеклянная» карточка ===== */
-.card.matched{cursor:default;animation:matchPop .5s;box-shadow:0 0 0 3px var(--pc),0 0 28px 8px var(--pc);z-index:1}
-.card.matched .front{background:linear-gradient(160deg,rgba(255,255,255,.32),rgba(255,255,255,.10));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.card.matched .front::after{content:"";position:absolute;inset:0;background:var(--pc);opacity:.22;pointer-events:none}
-.card.matched .ph{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.55);color:#fff}
-@keyframes matchPop{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1)}}
+        .card:hover .img-box img {
+            transform: scale(1.1);
+        }
 
-.card.shake{animation:shake .45s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+        .text-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(5px);
+            padding: clamp(8px, 1vw, 15px);
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
 
-#peek{position:absolute;top:6px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:10px;background:rgba(255,193,7,.95);color:#4a3200;font-weight:800;padding:8px 18px;border-radius:99px;z-index:5;font-size:clamp(13px,3vmin,20px);box-shadow:0 6px 20px rgba(0,0,0,.35);white-space:nowrap}
-#peek.show{display:flex}
-#peek b{font-size:1.4em}
+        .card:hover .text-overlay {
+            transform: translateY(0);
+        }
 
-.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,20,.85);z-index:10;border-radius:12px}
-.overlay.show{display:flex}
-.overlayBox{text-align:center;display:flex;flex-direction:column;gap:12px;padding:16px;align-items:center}
-#winImg{display:flex;justify-content:center}
-#winImg img,#winImg video{max-height:30vh;max-width:min(78vw,460px);border-radius:14px;box-shadow:0 0 0 3px rgba(170,238,68,.6),0 0 30px rgba(170,238,68,.35);object-fit:contain;background:#000;display:block}
-#winImg .ph{width:min(70vw,420px);height:22vh}
-#winTitle{font-size:clamp(18px,5vmin,34px);font-weight:900}
-#winSub{opacity:.85;font-size:clamp(11px,2.6vmin,16px);font-weight:700}
+        .role-name {
+            font-weight: 800;
+            font-size: clamp(0.7rem, 1.2vw, 1rem);
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
 
-/* ===== ФИНАЛ: ВИДЕО НА ВЕСЬ ЭКРАН, БЕЗ КНОПОК ===== */
-#screen-final{padding:0;gap:0}
-#videoBox{position:absolute;inset:0;background:#000}
-#videoBox video{width:100%;height:100%;object-fit:contain;background:#000;display:block}
-#finalAgain{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);display:none;z-index:5}
-</style>
+        .action-text {
+            font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+            color: var(--text-sec);
+            font-weight: 600;
+        }
+
+        /* МОДАЛЬНОЕ ОКНО */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid var(--accent);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* БЫСТРАЯ АНИМАЦИЯ ТОЧЕК ПО КРУГУ */
+        .magic-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
+        }
+
+        .magic-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        @keyframes spinCircle {
+            0% { transform: translate(-50%, -50%) rotate(0deg) translateX(35px) rotate(0deg); opacity: 0.3; }
+            50% { opacity: 1; box-shadow: 0 0 25px var(--accent), 0 0 40px rgba(170,238,68,0.6); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(35px) rotate(-360deg); opacity: 0.3; }
+        }
+
+        .spinning .magic-dot { animation: spinCircle 0.8s linear infinite; opacity: 1; }
+        .spinning .magic-dot:nth-child(1) { animation-delay: 0s; }
+        .spinning .magic-dot:nth-child(2) { animation-delay: 0.1s; }
+        .spinning .magic-dot:nth-child(3) { animation-delay: 0.2s; }
+        .spinning .magic-dot:nth-child(4) { animation-delay: 0.3s; }
+        .spinning .magic-dot:nth-child(5) { animation-delay: 0.4s; }
+        .spinning .magic-dot:nth-child(6) { animation-delay: 0.5s; }
+        .spinning .magic-dot:nth-child(7) { animation-delay: 0.6s; }
+        .spinning .magic-dot:nth-child(8) { animation-delay: 0.7s; }
+
+        @keyframes finalFlash {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; box-shadow: 0 0 20px var(--accent); }
+            50% { transform: translate(-50%, -50%) scale(4); opacity: 1; box-shadow: 0 0 60px var(--accent), 0 0 100px rgba(170,238,68,0.8); }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; box-shadow: 0 0 0 transparent; }
+        }
+
+        .flashing .magic-dot {
+            animation: finalFlash 0.4s ease-out forwards !important;
+            animation-delay: calc(var(--i) * 0.03s) !important;
+        }
+
+        .modal-role {
+            color: var(--accent);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+
+        .modal-role.visible { display: block; opacity: 1; transform: translateY(0); }
+
+        .prediction-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #fff;
+            font-weight: 600;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease 0.1s;
+        }
+
+        .prediction-text.visible { display: block; opacity: 1; transform: translateY(0); }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease 0.2s;
+        }
+
+        .btn-group.visible { display: flex; opacity: 1; }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.9rem;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-primary { background: var(--accent); color: #121212; }
+        .btn-primary:hover { box-shadow: 0 0 20px rgba(170, 238, 68, 0.5); transform: scale(1.05); }
+        .btn-secondary { background: transparent; color: var(--accent); }
+        .btn-secondary:hover { background: rgba(170, 238, 68, 0.1); }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(6, 1fr); gap: 6px; padding: 5px; }
+            .modal-content { padding: 25px 20px; min-height: 250px; }
+            .prediction-text { font-size: 0.95rem; }
+            .magic-container { width: 80px; height: 80px; margin-bottom: 20px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ЖИВЫЕ ЗВЁЗДЫ -->
-<div id="stars"></div>
+    <div class="stars"></div>
 
-<!-- ═══════════ ГЛАВНЫЙ ЭКРАН ═══════════ -->
-<div id="screen-main" class="screen active">
-  <div id="mainImg"></div>
-  <h1 class="title">ПРОТИВОПОЛОЖНОСТИ</h1>
-  <p class="subtitle">Найди пары противоположностей · 3 уровня</p>
-  <button class="btn big neon" onclick="startLevel(1)"><span class="play"></span><span class="lbl">СТАРТ</span></button>
-  <div class="lvlRow">
-    <button class="btn small" onclick="startLevel(1)">1 · Разминка</button>
-    <button class="btn small" onclick="startLevel(2)">2 · Шерлок</button>
-    <button class="btn small" onclick="startLevel(3)">3 · Мемори</button>
-  </div>
-</div>
+    <header>
+        <h1>Что тебя ждет в новом учебном году?</h1>
+        <p class="subtitle">Выбери свою роль и узнай прогноз на сентябрь.</p>
+    </header>
 
-<!-- ═══════════ ИГРА ═══════════ -->
-<div id="screen-game" class="screen">
-  <header class="hud">
-    <button class="iconBtn" onclick="goHome()">⌂</button>
-    <div id="lvlBadge">Уровень 1</div>
-    <div id="pairsHud">Пары: 0/6</div>
-    <button class="iconBtn" onclick="startLevel(level)">⟳</button>
-  </header>
-  <div class="boardWrap">
-    <div id="grid"></div>
-    <div id="peek"><span>👀 Запоминай!</span><b id="peekNum">3</b></div>
-    <div id="win" class="overlay">
-      <div class="overlayBox">
-        <div id="winImg"></div>
-        <div id="winTitle"></div>
-        <div id="winSub"></div>
-        <button id="winBtn" class="btn big"></button>
-      </div>
+    <div class="grid-container" id="gameGrid"></div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="magic-container" id="magicContainer">
+                <div class="magic-dot" style="--i:0"></div>
+                <div class="magic-dot" style="--i:1"></div>
+                <div class="magic-dot" style="--i:2"></div>
+                <div class="magic-dot" style="--i:3"></div>
+                <div class="magic-dot" style="--i:4"></div>
+                <div class="magic-dot" style="--i:5"></div>
+                <div class="magic-dot" style="--i:6"></div>
+                <div class="magic-dot" style="--i:7"></div>
+            </div>
+            
+            <div class="modal-role" id="mRole"></div>
+            <div class="prediction-text" id="mText"></div>
+            
+            <div class="btn-group" id="btnGroup">
+                <button class="btn btn-primary" onclick="getAnotherPrediction()">🔮 Гадать ещё раз</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<!-- ═══════════ ФИНАЛ: ВИДЕО НА ВЕСЬ ЭКРАН ═══════════ -->
-<div id="screen-final" class="screen">
-  <div id="videoBox"></div>
-  <button id="finalAgain" class="btn big" onclick="goHome()">🔁 Играть снова</button>
-</div>
+    <script>
+        // Магический звук
+        function playMagicSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const frequencies = [523.25, 659.25, 783.99, 1046.50];
+                
+                frequencies.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        
+                        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                        gainNode.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                        
+                        osc.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        osc.start(audioCtx.currentTime);
+                        osc.stop(audioCtx.currentTime + 0.8);
+                    }, i * 80);
+                });
+            } catch (e) {}
+        }
 
-<script>
-/* ════════════════════════════════════════════════
-   ⭐ ВЕРСИЯ ФАЙЛОВ. Заменила картинки/видео на новые —
-   поменяй цифру ниже: 2 → 3 → 4 …
-   ════════════════════════════════════════════════ */
-const VERSION = "2";
-const v = p => p + "?v=" + VERSION;
+        const experts = [
+            {
+                id: 'videomaker', name: 'Видеограф', img: 'videomaker.jpg',
+                predictions: [
+                    "Сегодня тебе напишет клиент с бюджетом, о котором ты даже не мечтал. Завтра подпишете договор.",
+                    "Завтра ты заключишь большой контракт на съемку. Оплата придет раньше срока.",
+                    "Сегодня удача на твоей стороне: старое оборудование продастся по цене нового. Завтра купишь технику мечты."
+                ]
+            },
+            {
+                id: 'smm', name: 'SMM-щик', img: 'smm.jpg',
+                predictions: [
+                    "Сегодня к тебе обратится крупный бренд. Завтра они заплатят за стратегию тройной чек.",
+                    "Завтра твой пост принесет столько лидов, что отдел продаж не справится. Клиенты сами найдут тебя.",
+                    "Сегодня алгоритмы сжалятся над тобой. Охваты вырастут в 5 раз, а завтра предложат рекламную интеграцию."
+                ]
+            },
+            {
+                id: 'psychologist', name: 'Психолог', img: 'psychologist.jpg',
+                predictions: [
+                    "Сегодня появится клиент, который будет ходить к тебе годами. Завтра он оплатит абонемент на месяц вперед.",
+                    "Завтра ты проведешь групповую терапию, которая соберет полный зал. Доход превысит ожидания.",
+                    "Сегодня тебе напишут с просьбой о срочной консультации. Час работы сегодня стоит как три обычных."
+                ]
+            },
+            {
+                id: 'astrologer', name: 'Астролог', img: 'astrologer.jpg',
+                predictions: [
+                    "Сегодня звезды сулят богатого клиента. Завтра он закажет натальную карту для всей семьи.",
+                    "Завтра твой прогноз станет вирусным. Подписчики начнут массово покупать личные разборы.",
+                    "Сегодня интуиция работает на 200%. Ты точно попадешь в боль клиента, и он оставит щедрый чаевые."
+                ]
+            },
+            {
+                id: 'stylist', name: 'Стилист', img: 'stylist.jpg',
+                predictions: [
+                    "Сегодня клиент доверится тебе полностью и купит весь шоппинг-лист. Комиссия будет приятной.",
+                    "Завтра ты найдешь винтажную вещь за копейки, которую перепродашь втридорога. Или оставишь себе как инвестицию.",
+                    "Сегодня бренды сами предложат сотрудничество. Завтра получишь одежду бесплатно и еще заплатят за обзор."
+                ]
+            },
+            {
+                id: 'photographer', name: 'Фотограф', img: 'photographer.jpg',
+                predictions: [
+                    "Сегодня снимешь портрет, который захочет купить журнал. Завтра гонорар упадет на карту.",
+                    "Завтра у тебя будет полная запись на съемки до конца месяца. Цены можно смело повышать.",
+                    "Сегодня старый клиент вернется с новым проектом и бюджетом х2. Работа будет в кайф."
+                ]
+            },
+            {
+                id: 'ai-specialist', name: 'AI-специалист', img: 'ai-specialist.jpg',
+                predictions: [
+                    "Сегодня ты автоматизируешь процесс, который сэкономит компании миллионы. Завтра тебе выпишут премию.",
+                    "Завтра нейросеть выдаст решение, которое ты продашь как уникальный продукт. Маржа 100%.",
+                    "Сегодня к тебе обратятся за консультацией крупные игроки рынка. Их бюджеты тебя приятно удивят."
+                ]
+            },
+            {
+                id: 'designer', name: 'Дизайнер', img: 'designer.jpg',
+                predictions: [
+                    "Сегодня заказчик утвердит макет без правок и сразу переведет полную оплату. Без предоплаты!",
+                    "Завтра ты возьмешь дополнительный проект, который закроет все финансовые цели на месяц.",
+                    "Сегодня твоё портфолио заметит арт-директор топ-студии. Завтра обсудите условия сотрудничества."
+                ]
+            },
+            {
+                id: 'teacher', name: 'Учитель', img: 'teacher.jpg',
+                predictions: [
+                    "Сегодня родители учеников скинутся на подарок, который превзойдет ожидания. Завтра получишь его на руки.",
+                    "Завтра запустится твой онлайн-курс или репетиторство. Первая группа наберется за один вечер.",
+                    "Сегодня администрация оценит твои усилия и назначит надбавку. Наконец-то справедливость!"
+                ]
+            },
+            {
+                id: 'housewife', name: 'Домохозяйка', img: 'housewife.jpg',
+                predictions: [
+                    "Сегодня муж обрадует приятной суммой на личные расходы. Завтра потратишь их на то, что давно хотела.",
+                    "Завтра бытовые вопросы решатся сами собой, освободив время для подработки или хобби, которое принесет доход.",
+                    "Сегодня кто-то из близких сделает дорогой подарок, о котором ты молчала. Интуиция работает!"
+                ]
+            },
+            {
+                id: 'blogger', name: 'Блогер', img: 'blogger.jpg',
+                predictions: [
+                    "Сегодня выйдет реклама, которая принесет больше денег, чем за последний месяц. Завтра выведешь прибыль.",
+                    "Завтра блог монетизируется по-новому: подписчики сами начнут донатить или покупать мерч.",
+                    "Сегодня алгоритмы выведут тебя в топ. Завтра бренды сами напишут с предложениями о бартере и оплате."
+                ]
+            },
+            {
+                id: 'cosmetologist', name: 'Косметолог', img: 'cosmetologist.jpg',
+                predictions: [
+                    "Сегодня клиент купит курс процедур целиком. Завтра запишется еще трое по его рекомендации.",
+                    "Завтра распродашь остатки косметики, которые лежали мертвым грузом. Оборот будет неожиданным.",
+                    "Сегодня сделаешь процедуру, после которой клиент станет твоим VIP-постоянником. Чеки будут стабильно высокими."
+                ]
+            }
+        ];
 
-/* 📌 ВСЕ ПУТИ ПРОПИСАНЫ. Файлы лежат рядом с index.html */
-const MEDIA = {
-  main:       "main.jpg",        // заставка
-  back:       "rubashka.jpg",    // рубашка карточек
-  finalVideo: "final.mp4",       // финальное видео (после 3 уровня, на весь экран)
-  win1:       "win1.mp4",        // видео-поздравление после 1 уровня
-  win2:       "win2.mp4",        // видео-поздравление после 2 уровня
-  win3:       "win3.mp4",        // (после 3 уровня сразу final.mp4)
-  img: {
-    den:      "den.jpg",         // ДЕНЬ
-    noch:     "noch.jpg",        // НОЧЬ
-    ogon:     "ogon.jpg",        // ОГОНЬ
-    voda:     "voda.jpg",        // ВОДА
-    bolshoy:  "bolshoy.jpg",     // БОЛЬШОЙ
-    malenkiy: "malenkiy.jpg",    // МАЛЕНЬКИЙ
-    radost:   "radost.jpg",      // РАДОСТЬ
-    grust:    "grust.jpg",       // ГРУСТЬ
-    verh:     "verh.jpg",        // ВЕРХ
-    niz:      "niz.jpg",         // НИЗ
-    belyy:    "belyy.jpg",       // БЕЛЫЙ
-    chernyy:  "chernyy.jpg"      // ЧЁРНЫЙ
-  }
-};
+        const grid = document.getElementById('gameGrid');
+        const modal = document.getElementById('modal');
+        const mRole = document.getElementById('mRole');
+        const mText = document.getElementById('mText');
+        const btnGroup = document.getElementById('btnGroup');
+        const magicContainer = document.getElementById('magicContainer');
 
-// color — цвет свечения пары (выбор + «стекло» при совпадении)
-const PAIRS = [
-  {id:"den-noch",  color:"#ffc247", a:{key:"den",     word:"ДЕНЬ",     emoji:"☀️"}, b:{key:"noch",    word:"НОЧЬ",     emoji:"🌙"}},
-  {id:"ogon-voda", color:"#ff6b6b", a:{key:"ogon",    word:"ОГОНЬ",    emoji:"🔥"}, b:{key:"voda",    word:"ВОДА",     emoji:"💧"}},
-  {id:"big-small", color:"#4da6ff", a:{key:"bolshoy", word:"БОЛЬШОЙ",  emoji:"🐘"}, b:{key:"malenkiy",word:"МАЛЕНЬКИЙ",emoji:"🐭"}},
-  {id:"joy-sad",   color:"#7ed957", a:{key:"radost",  word:"РАДОСТЬ",  emoji:"😄"}, b:{key:"grust",   word:"ГРУСТЬ",   emoji:"😢"}},
-  {id:"verh-niz",  color:"#c17bff", a:{key:"verh",    word:"ВЕРХ",     emoji:"⬆️"}, b:{key:"niz",     word:"НИЗ",      emoji:"⬇️"}},
-  {id:"bely-chern",color:"#2fd6c3", a:{key:"belyy",   word:"БЕЛЫЙ",    emoji:"⬜"}, b:{key:"chernyy", word:"ЧЁРНЫЙ",   emoji:"⬛"}},
-];
+        let currentExpert = null;
+        let lastIndex = -1; // Для предотвращения повторов
 
-const LEVEL_NAMES = {1:"Разминка", 2:"Шерлок", 3:"Мемори"};
-const HINTS = {1:"соедини противоположности", 2:"запомни, где что!", 3:"открывай по две карты"};
-const TOTAL = PAIRS.length;
+        // Генерация карточек
+        experts.forEach(expert => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="img-box">
+                    <img src="${expert.img}" alt="${expert.name}" loading="lazy">
+                </div>
+                <div class="text-overlay">
+                    <div class="role-name">${expert.name}</div>
+                    <div class="action-text">Узнай судьбу ↓</div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => startMagic(expert));
+            grid.appendChild(card);
+        });
 
-let level=1, matched=0, first=null, selArr=[], lock=true, peekTimer=null;
-const grid=document.getElementById("grid");
-const $=id=>document.getElementById(id);
+        // Быстрая магия
+        function startMagic(expert) {
+            currentExpert = expert;
+            lastIndex = -1; // Сброс при выборе новой роли
+            
+            runAnimation();
+        }
 
-/* ===== ТИХИЕ МАГИЧЕСКИЕ ЗВУКИ (Web Audio, без mp3-файлов) ===== */
-let AC=null;
-function audio(){
-  try{
-    if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
-    if(AC.state==="suspended")AC.resume();
-  }catch(e){}
-  return AC;
-}
-function tone(f,dur,type,vol,delay,slide){
-  const ac=audio();if(!ac)return;
-  const t=ac.currentTime+(delay||0);
-  const o=ac.createOscillator(),g=ac.createGain();
-  o.type=type||"sine";o.frequency.setValueAtTime(f,t);
-  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
-  g.gain.setValueAtTime(0.0001,t);
-  g.gain.linearRampToValueAtTime(vol,t+0.015);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  o.connect(g);g.connect(ac.destination);
-  o.start(t);o.stop(t+dur+0.05);
-}
-const SFX={
-  flip(){tone(480,0.12,"sine",0.035,0,720);},
-  match(){tone(660,0.22,"sine",0.05);tone(990,0.26,"sine",0.04,0.09);tone(1320,0.3,"sine",0.028,0.18);},
-  miss(){tone(280,0.18,"triangle",0.045,0.25,220);tone(200,0.22,"triangle",0.035,0.36);},
-  win(){[523,659,784,1047].forEach((f,i)=>tone(f,0.32,"sine",0.05,i*0.11));}
-};
-/* ===== конец звуков ===== */
+        function runAnimation() {
+            // Сброс видимости текста
+            mRole.classList.remove('visible');
+            mText.classList.remove('visible');
+            btnGroup.classList.remove('visible');
+            magicContainer.className = 'magic-container';
+            
+            modal.classList.add('active');
+            playMagicSound();
+            
+            // Запускаем вращение
+            requestAnimationFrame(() => {
+                magicContainer.classList.add('spinning');
+            });
+            
+            // Через 1.2 секунды - вспышка и показ результата
+            setTimeout(() => {
+                magicContainer.classList.remove('spinning');
+                magicContainer.classList.add('flashing');
+                
+                setTimeout(() => {
+                    showPrediction();
+                }, 400);
+            }, 1200);
+        }
 
-/* ===== ПОЛНОЭКРАННЫЙ РЕЖИМ ===== */
-function goFullscreen(){
-  try{
-    const el=document.documentElement;
-    if(!document.fullscreenElement && !document.webkitFullscreenElement){
-      if(el.requestFullscreen)el.requestFullscreen().catch(()=>{});
-      else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
-    }
-  }catch(e){}
-}
-function exitFullscreen(){
-  try{
-    if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
-    else if(document.webkitFullscreenElement)document.webkitExitFullscreen();
-  }catch(e){}
-}
+        function showPrediction() {
+            const preds = currentExpert.predictions;
+            let randomIndex;
+            
+            // Логика, чтобы не повторялось одно и то же подряд
+            do {
+                randomIndex = Math.floor(Math.random() * preds.length);
+            } while (randomIndex === lastIndex && preds.length > 1);
+            
+            lastIndex = randomIndex;
+            
+            mRole.textContent = currentExpert.name;
+            mText.textContent = preds[randomIndex];
+            
+            mRole.classList.add('visible');
+            mText.classList.add('visible');
+            btnGroup.classList.add('visible');
+        }
 
-/* ===== ЗВЁЗДНОЕ НЕБО: мерцание + интерактив (без звука) ===== */
-const starsBox=document.getElementById("stars");
-const stars=[];
-(function createStars(){
-  const COUNT=55;
-  for(let i=0;i<COUNT;i++){
-    const el=document.createElement("i");
-    const r=Math.random();
-    el.className="star"+(r<.12?" gold":r<.24?" blue":"")+(Math.random()<.22?" big":"");
-    const px=Math.random()*100, py=Math.random()*100;
-    el.style.left=px+"%"; el.style.top=py+"%";
-    el.style.animationDuration=(2.5+Math.random()*4.5)+"s";
-    el.style.animationDelay=(Math.random()*6)+"s";
-    starsBox.appendChild(el);
-    stars.push({el,px,py});
-  }
-})();
+        function getAnotherPrediction() {
+            runAnimation();
+        }
 
-let lastMove=0;
-document.addEventListener("pointermove",e=>{
-  const now=performance.now();
-  if(now-lastMove<40)return;
-  lastMove=now;
-  const w=innerWidth,h=innerHeight;
-  for(const s of stars){
-    const dx=s.px*w/100-e.clientX, dy=s.py*h/100-e.clientY;
-    if(dx*dx+dy*dy<4900){
-      s.el.classList.add("lit");
-      clearTimeout(s.el._t);
-      s.el._t=setTimeout(()=>s.el.classList.remove("lit"),600);
-    }
-  }
-});
+        function closeModal() {
+            modal.classList.remove('active');
+            magicContainer.className = 'magic-container';
+        }
 
-document.addEventListener("pointerdown",e=>{audio();burst(e.clientX,e.clientY);});
-function burst(x,y){
-  const flash=document.createElement("span");
-  flash.className="sparkFlash"; flash.textContent="✦";
-  flash.style.left=x+"px"; flash.style.top=y+"px";
-  document.body.appendChild(flash);
-  setTimeout(()=>flash.remove(),900);
-  for(let i=0;i<7;i++){
-    const p=document.createElement("span");
-    p.className="sparkDot";
-    const ang=Math.random()*Math.PI*2, dist=25+Math.random()*45;
-    p.style.left=x+"px"; p.style.top=y+"px";
-    p.style.setProperty("--dx",Math.cos(ang)*dist+"px");
-    p.style.setProperty("--dy",Math.sin(ang)*dist+"px");
-    const sz=3+Math.random()*4;
-    p.style.width=sz+"px"; p.style.height=sz+"px";
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),900);
-  }
-}
-/* ===== конец звёздного неба ===== */
-
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");}
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-
-function coverHTML(){
-  return MEDIA.back
-    ? `<img src="${v(MEDIA.back)}" alt="">`
-    : `<div class="ph cover-ph"><span class="em">?</span><small>рубашка.jpg</small></div>`;
-}
-function cardHTML(c,i){
-  const src=MEDIA.img[c.key];
-  const face=src
-    ? `<img src="${v(src)}" alt="${c.word}">`
-    : `<div class="ph"><span class="em">${c.emoji}</span><small>${c.key}.jpg</small></div>`;
-  // без подписей — картинка на всю карточку
-  return `<div class="card" style="--pc:${c.color}" data-i="${i}" data-pair="${c.pairId}" data-key="${c.key}">
-    <div class="inner">
-      <div class="face cover">${coverHTML()}</div>
-      <div class="face front"><div class="imgbox">${face}</div></div>
-    </div>
-  </div>`;
-}
-
-function startLevel(n){
-  audio();
-  stopPeek();
-  level=n; matched=0; first=null; selArr=[]; lock=true;
-  $("win").classList.remove("show");
-  grid.classList.toggle("mem", level!==1);
-  const deck=shuffle(PAIRS.flatMap(p=>[{pairId:p.id,color:p.color,...p.a},{pairId:p.id,color:p.color,...p.b}]));
-  grid.innerHTML=deck.map(cardHTML).join("");
-  $("lvlBadge").innerHTML=`Уровень ${level} · ${LEVEL_NAMES[level]}<br><small>${HINTS[level]}</small>`;
-  updateHUD();
-  show("screen-game");
-  const cards=[...grid.querySelectorAll(".card")];
-  if(level===1){
-    setTimeout(()=>{
-      cards.forEach((c,i)=>{c.querySelector(".inner").style.transitionDelay=(i*40)+"ms";c.classList.add("up");});
-      setTimeout(()=>cards.forEach(c=>c.querySelector(".inner").style.transitionDelay=""),1100);
-      lock=false;
-    },250);
-  }else if(level===2){
-    setTimeout(startPeek,350);
-  }else{
-    lock=false;
-  }
-}
-
-function startPeek(){
-  lock=true;
-  grid.querySelectorAll(".card").forEach(c=>c.classList.add("up"));
-  let n=3; $("peekNum").textContent=n; $("peek").classList.add("show");
-  peekTimer=setInterval(()=>{
-    n--;
-    if(n>0){$("peekNum").textContent=n;}
-    else{stopPeek();grid.querySelectorAll(".card").forEach(c=>c.classList.remove("up"));lock=false;}
-  },1000);
-}
-function stopPeek(){if(peekTimer){clearInterval(peekTimer);peekTimer=null;}$("peek").classList.remove("show");}
-
-grid.addEventListener("click",e=>{
-  const card=e.target.closest(".card");
-  if(!card||lock)return;
-  if(level===1)clickL1(card);else clickMemory(card);
-});
-
-function clickL1(card){
-  if(card.classList.contains("matched")||card.classList.contains("sel"))return;
-  card.classList.add("sel");selArr.push(card);
-  if(selArr.length===2){
-    lock=true;const[a,b]=selArr;
-    if(a.dataset.pair===b.dataset.pair){
-      setTimeout(()=>{[a,b].forEach(c=>{c.classList.remove("sel");c.classList.add("matched");});selArr=[];lock=false;found();},350);
-    }else{
-      a.classList.add("shake");b.classList.add("shake");SFX.miss();
-      setTimeout(()=>{[a,b].forEach(c=>c.classList.remove("sel","shake"));selArr=[];lock=false;},600);
-    }
-  }
-}
-
-function clickMemory(card){
-  if(card.classList.contains("matched")||card.classList.contains("up"))return;
-  card.classList.add("up");SFX.flip();
-  if(!first){first=card;return;}
-  lock=true;const a=first,b=card;first=null;
-  if(a.dataset.pair===b.dataset.pair){
-    setTimeout(()=>{a.classList.add("matched");b.classList.add("matched");lock=false;found();},300);
-  }else{
-    SFX.miss();
-    setTimeout(()=>{a.classList.remove("up");b.classList.remove("up");lock=false;},800);
-  }
-}
-
-function found(){matched++;updateHUD();SFX.match();if(matched===TOTAL)setTimeout(showWin,500);}
-function updateHUD(){$("pairsHud").textContent=`Пары: ${matched}/${TOTAL}`;}
-
-function phWin(name){return `<div class="ph main-ph"><span class="em">🎬</span><small>Сюда вставь поздравление (${name})</small></div>`;}
-
-function showWin(){
-  lock=true;SFX.win();
-  if(level<3){
-    // ВИДЕО-поздравление уровня (win1.mp4 / win2.mp4)
-    const key="win"+level, box=$("winImg");
-    if(MEDIA[key]){
-      box.innerHTML=`<video playsinline src="${v(MEDIA[key])}"></video>`;
-      const vid=box.querySelector("video");
-      vid.onerror=()=>{box.innerHTML=phWin(MEDIA[key]);};
-      vid.play().catch(()=>{vid.setAttribute("controls","");});
-    }else box.innerHTML=phWin(key+".mp4");
-    $("winTitle").textContent=`Уровень ${level} пройден! ⭐`;
-    $("winBtn").textContent="Дальше →";
-    $("winSub").textContent=`Все ${TOTAL} пар противоположностей найдены!`;
-    $("win").classList.add("show");
-  }else{
-    // ФИНАЛЬНЫЙ РАУНД ПРОЙДЕН — сразу открываем видео
-    setTimeout(showFinal,700);
-  }
-}
-$("winBtn").addEventListener("click",()=>{
-  const vid=$("winImg").querySelector("video");
-  if(vid)vid.pause(); // останавливаем поздравление перед следующим уровнем
-  $("win").classList.remove("show");
-  if(level<3)startLevel(level+1);else showFinal();
-});
-
-function showFinal(){
-  const box=$("videoBox"), btn=$("finalAgain");
-  btn.style.display="none";
-  goFullscreen(); // раскрываем на весь экран
-  if(MEDIA.finalVideo){
-    // БЕЗ кнопок управления — чистое кино
-    box.innerHTML=`<video playsinline src="${v(MEDIA.finalVideo)}"></video>`;
-    show("screen-final");
-    const vid=box.querySelector("video");
-    vid.addEventListener("ended",()=>{btn.style.display="block";});
-    vid.play().catch(()=>{ // если браузер запретил автостарт — покажем кнопки
-      vid.setAttribute("controls","");
-      btn.style.display="block";
-    });
-  }else{
-    box.innerHTML=`<div class="ph final-ph"><span class="em">🎬</span><small>Сюда вставь финальное видео (final.mp4)</small></div>`;
-    show("screen-final");
-    btn.style.display="block";
-  }
-}
-function goHome(){
-  stopPeek();lock=false;
-  exitFullscreen();
-  show("screen-main");
-}
-
-(function init(){
-  $("mainImg").innerHTML = MEDIA.main
-    ? `<img src="${v(MEDIA.main)}" alt="">`
-    : `<div class="ph main-ph"><span class="em">🖼️</span><small>Сюда вставь картинку главного экрана (main.jpg)</small></div>`;
-})();
-</script>
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    </script>
 </body>
 </html>
