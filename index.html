@@ -42,7 +42,7 @@
 
         header {
             text-align: center;
-            padding: 20px 20px 15px;
+            padding: 100px 20px 20px;
             flex-shrink: 0;
         }
 
@@ -133,13 +133,12 @@
             font-weight: 600;
         }
 
-        /* КНОПКА УПРАВЛЕНИЯ МУЗЫКОЙ */
         .music-control {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 100;
-            background: rgba(30, 30, 30, 0.9);
+            background: rgba(30, 30, 30, 0.95);
             backdrop-filter: blur(10px);
             border: 2px solid var(--accent);
             border-radius: 50px;
@@ -148,41 +147,24 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-        }
-
-        .music-control:hover {
-            box-shadow: 0 4px 20px rgba(170, 238, 68, 0.4);
         }
 
         .music-btn {
             background: var(--accent);
             border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            padding: 8px 16px;
+            border-radius: 20px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-
-        .music-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .music-btn:active {
-            transform: scale(0.95);
+            font-weight: 700;
+            color: #121212;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .volume-slider {
             width: 80px;
             height: 4px;
             -webkit-appearance: none;
-            appearance: none;
             background: #333;
             border-radius: 2px;
             outline: none;
@@ -191,29 +173,13 @@
 
         .volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 14px;
             height: 14px;
             border-radius: 50%;
             background: var(--accent);
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .volume-slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            border: none;
-        }
-
-        /* Модальное окно */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -241,7 +207,6 @@
             max-width: 450px;
             width: 100%;
             text-align: center;
-            position: relative;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -268,7 +233,7 @@
 
         @keyframes spinCircle {
             0% { transform: translate(-50%, -50%) rotate(0deg) translateX(35px) rotate(0deg); opacity: 0.3; }
-            50% { opacity: 1; box-shadow: 0 0 25px var(--accent), 0 0 40px rgba(170,238,68,0.6); }
+            50% { opacity: 1; }
             100% { transform: translate(-50%, -50%) rotate(360deg) translateX(35px) rotate(-360deg); opacity: 0.3; }
         }
 
@@ -283,9 +248,9 @@
         .spinning .magic-dot:nth-child(8) { animation-delay: 0.7s; }
 
         @keyframes finalFlash {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; box-shadow: 0 0 20px var(--accent); }
-            50% { transform: translate(-50%, -50%) scale(4); opacity: 1; box-shadow: 0 0 60px var(--accent), 0 0 100px rgba(170,238,68,0.8); }
-            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; box-shadow: 0 0 0 transparent; }
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(4); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
         }
 
         .flashing .magic-dot {
@@ -300,12 +265,9 @@
             margin-bottom: 15px;
             text-transform: uppercase;
             display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease;
         }
 
-        .modal-role.visible { display: block; opacity: 1; transform: translateY(0); }
+        .modal-role.visible { display: block; }
 
         .prediction-text {
             font-size: 1.05rem;
@@ -313,102 +275,52 @@
             color: #fff;
             font-weight: 600;
             display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease 0.1s;
+            margin-bottom: 20px;
         }
 
-        .prediction-text.visible { display: block; opacity: 1; transform: translateY(0); }
+        .prediction-text.visible { display: block; }
 
         .btn-group {
             display: flex;
             gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
             justify-content: center;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.4s ease 0.2s;
+            flex-wrap: wrap;
         }
-
-        .btn-group.visible { display: flex; opacity: 1; }
 
         .btn {
             padding: 14px 28px;
             border-radius: 50px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-            font-size: 0.9rem;
             border: 2px solid var(--accent);
             flex: 1;
             min-width: 140px;
         }
 
         .btn-primary { background: var(--accent); color: #121212; }
-        .btn-primary:active { transform: scale(0.95); }
         .btn-secondary { background: transparent; color: var(--accent); }
-        .btn-secondary:active { transform: scale(0.95); background: rgba(170, 238, 68, 0.1); }
 
         @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-                padding: 10px;
-            }
-            .music-control {
-                top: 10px;
-                right: 10px;
-                padding: 8px 12px;
-            }
-            .volume-slider {
-                width: 60px;
-            }
+            .grid-container { grid-template-columns: repeat(3, 1fr); }
+            header { padding-top: 90px; }
         }
 
         @media (max-width: 480px) {
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                padding: 8px;
-            }
-            .card {
-                aspect-ratio: 1 / 1.2;
-            }
-            .role-label {
-                padding: 10px 6px;
-            }
-            .modal-content {
-                padding: 25px 20px;
-            }
-            .prediction-text {
-                font-size: 0.95rem;
-            }
-            .magic-container {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 20px;
-            }
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.85rem;
-                min-width: 120px;
-            }
-            .music-control {
-                top: 10px;
-                right: 10px;
-                padding: 6px 10px;
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+            .music-control { 
+                top: 10px; 
+                right: 10px; 
+                padding: 8px 12px;
+                flex-direction: column;
                 gap: 8px;
             }
             .music-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 1rem;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                width: 100%;
             }
-            .volume-slider {
-                width: 50px;
-            }
+            .volume-slider { width: 100%; }
+            header { padding-top: 140px; }
         }
     </style>
 </head>
@@ -416,13 +328,11 @@
 
     <div class="stars"></div>
 
-    <!-- УПРАВЛЕНИЕ МУЗЫКОЙ -->
-    <div class="music-control" id="musicControl">
-        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">▶️</button>
+    <div class="music-control">
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵 Музыка</button>
         <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
     </div>
 
-    <!-- АУДИО -->
     <audio id="bgMusic" loop>
         <source src="67.mp3" type="audio/mpeg">
     </audio>
@@ -434,7 +344,6 @@
 
     <div class="grid-container" id="gameGrid"></div>
 
-    <!-- Модальное окно -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <div class="magic-container" id="magicContainer">
@@ -451,30 +360,28 @@
             <div class="modal-role" id="mRole"></div>
             <div class="prediction-text" id="mText"></div>
             
-            <div class="btn-group" id="btnGroup">
-                <button class="btn btn-primary" onclick="getAnotherPrediction()">🔮 Ещё раз</button>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="getAnotherPrediction()"> Ещё раз</button>
                 <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
             </div>
         </div>
     </div>
 
     <script>
-        // УПРАВЛЕНИЕ МУЗЫКОЙ
         const bgMusic = document.getElementById('bgMusic');
         const musicBtn = document.getElementById('musicBtn');
         const volumeSlider = document.getElementById('volumeSlider');
         let isPlaying = false;
 
-        // Установка начальной громкости
         bgMusic.volume = 0.5;
 
         function toggleMusic() {
             if (isPlaying) {
                 bgMusic.pause();
-                musicBtn.textContent = '▶️';
+                musicBtn.textContent = ' Музыка';
             } else {
-                bgMusic.play().catch(e => console.log('Autoplay prevented'));
-                musicBtn.textContent = '⏸️';
+                bgMusic.play().catch(e => console.log('Audio error:', e));
+                musicBtn.textContent = '️ Пауза';
             }
             isPlaying = !isPlaying;
         }
@@ -483,7 +390,6 @@
             bgMusic.volume = value / 100;
         }
 
-        // Магический звук
         function playMagicSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -614,13 +520,11 @@
         const modal = document.getElementById('modal');
         const mRole = document.getElementById('mRole');
         const mText = document.getElementById('mText');
-        const btnGroup = document.getElementById('btnGroup');
         const magicContainer = document.getElementById('magicContainer');
 
         let currentExpert = null;
         let lastIndex = -1;
 
-        // Генерация карточек
         experts.forEach(expert => {
             const card = document.createElement('div');
             card.className = 'card';
@@ -638,12 +542,10 @@
             grid.appendChild(card);
         });
 
-        // Запуск магии
         function startMagic(expert) {
             currentExpert = expert;
             lastIndex = -1;
             
-            // Останавливаем музыку при открытии модального окна
             if (isPlaying) {
                 bgMusic.pause();
             }
@@ -654,7 +556,6 @@
         function runAnimation() {
             mRole.classList.remove('visible');
             mText.classList.remove('visible');
-            btnGroup.classList.remove('visible');
             magicContainer.className = 'magic-container';
             
             modal.classList.add('active');
@@ -689,7 +590,6 @@
             
             mRole.classList.add('visible');
             mText.classList.add('visible');
-            btnGroup.classList.add('visible');
         }
 
         function getAnotherPrediction() {
@@ -700,26 +600,13 @@
             modal.classList.remove('active');
             magicContainer.className = 'magic-container';
             
-            // Возобновляем музыку при закрытии модального окна
             if (isPlaying) {
-                bgMusic.play().catch(e => console.log('Autoplay prevented'));
+                bgMusic.play().catch(e => console.log('Audio error:', e));
             }
         }
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
-        });
-
-        // Попытка автовоспроизведения при загрузке
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                bgMusic.play().then(() => {
-                    isPlaying = true;
-                    musicBtn.textContent = '⏸️';
-                }).catch(e => {
-                    console.log('Autoplay prevented - user interaction needed');
-                });
-            }, 500);
         });
     </script>
 </body>
